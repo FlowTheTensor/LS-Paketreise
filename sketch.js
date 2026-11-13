@@ -220,6 +220,7 @@ function draw() {
     zeichneFreigaben();
     zeichneStempel();
     zeichneFehlerMeldung();
+    zeichneTooltip();
     pop();
     pop();
     aktualisiereUi();
@@ -271,6 +272,52 @@ function animT() {
     return 1;
   }
   return constrain((millis() - animT0) / d, 0, 1);
+}
+
+// Tooltip für abgeschnittene Zeilen (Paketlupe, Mitschnitt)
+let tooltip = null;
+
+function merkeTooltip(volltext, zeile) {
+  if (inRechteck(mausPos(), zeile)) {
+    tooltip = { text: volltext, x: zeile.x, y: zeile.y + zeile.h };
+  }
+}
+
+function zeichneTooltip() {
+  if (!tooltip) {
+    return;
+  }
+  const t = tooltip;
+  tooltip = null;
+  const m = mausPos();
+  textFont(MONO);
+  textSize(11);
+  textStyle(NORMAL);
+  const pad = 8;
+  const maxB = 520;
+  const zeilen = umbrechen(t.text, maxB);
+  const za = 11 * 1.45;
+  let bw = 0;
+  for (const z of zeilen) {
+    bw = Math.max(bw, textWidth(z));
+  }
+  bw += pad * 2;
+  const bh = zeilen.length * za + pad * 2 - 3;
+  let x = constrain(m.x + 12, 8, W - bw - 8);
+  let y = m.y + 18;
+  if (y + bh > H_INHALT - 8) {
+    y = m.y - bh - 10;
+  }
+  noStroke();
+  fill(29, 29, 28, 40);
+  rect(x + 1, y + 3, bw, bh, 6);
+  fill(...FARBE.text);
+  rect(x, y, bw, bh, 6);
+  fill(...FARBE.papier);
+  textAlign(LEFT, TOP);
+  for (let i = 0; i < zeilen.length; i++) {
+    text(zeilen[i], x + pad, y + pad + i * za);
+  }
 }
 
 function logik() {
@@ -1419,6 +1466,7 @@ function zeichnePaketlupe() {
       inhalt = h.felder.map((f2) => (f2[0] ? `${f2[0]}: ${f2[1]}` : f2[1])).join(" · ");
     }
     const platz = b - tw - 34;
+    const volltext = inhalt;
     let gekuerzt = false;
     while (textWidth(inhalt + "…") > platz && inhalt.length > 4) {
       inhalt = inhalt.slice(0, -2);
@@ -1426,6 +1474,7 @@ function zeichnePaketlupe() {
     }
     if (gekuerzt) {
       inhalt += "…";
+      merkeTooltip(`L${h.n} ${titel}: ${volltext}`, { x: x - 6, y: y - 2, w: b + 12, h: zeilenH });
     }
     text(inhalt, x + 34 + tw, y + zeilenH / 2 - 2);
     y += zeilenH;
@@ -1493,6 +1542,7 @@ function zeichneMitschnitt() {
     }
     if (info !== e.info) {
       info += "…";
+      merkeTooltip(`${e.nr}  ${e.proto}  ${e.info}`, { x, y, w: b, h: zeilenH - 2 });
     }
     text(info, x + 96, y + zeilenH / 2 - 1);
     y += zeilenH;
