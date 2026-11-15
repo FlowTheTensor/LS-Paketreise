@@ -174,3 +174,25 @@ Am einfachsten in VS Code mit der Erweiterung **Live Server**: Rechtsklick auf `
 - Jedes Szenario wird vorab komplett durchgerechnet. Die Anzeige blättert nur durch diese Schritte. Während ein Paket unterwegs ist, zeigen Mitschnitt, MAC-Tabelle und Caches noch den alten Stand und springen erst um, wenn das Paket an der passenden Stelle vorbeikommt.
 - Das Modell ist bewusst vereinfacht: ein einziges Subnetz ohne Router, Sequenznummern relativ ab 0 (wie Wireshark sie anzeigt), TLS 1.3 auf drei Schritte gekürzt, keine Verbindungsabbau-Segmente (FIN). Dass TLS in der Praxis zwischen Schicht 4 und 7 sitzt, wird zugunsten der klaren Zuordnung „Verschlüsselung = Schicht 6“ ausgeblendet.
 - Fehler in `draw()` werden abgefangen und als Hinweis angezeigt, statt das Programm einzufrieren.
+
+## Lizenz
+
+[![CC BY 4.0](https://img.shields.io/badge/Lizenz-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/deed.de)
+
+**Paketreise · Zwei Firmenzentralen und ein Industriespion** von **Christoph Rothaug, Jakob-Preh-Schule Bad Neustadt**, steht unter der Lizenz [Creative Commons Namensnennung 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/deed.de). Der vollständige Lizenztext steht in der Datei [`LICENSE`](LICENSE).
+
+Du darfst das Material (Quellcode, Texte, Aufgaben und Grafiken) kopieren, weitergeben und verändern, auch kommerziell. Dafür musst du
+
+- den Urheber nennen: *Christoph Rothaug, Jakob-Preh-Schule Bad Neustadt*,
+- auf die Lizenz verlinken: <https://creativecommons.org/licenses/by/4.0/deed.de>,
+- angeben, ob du etwas verändert hast.
+
+Vorschlag für die Namensnennung: *„Paketreise · Zwei Firmenzentralen und ein Industriespion“ von Christoph Rothaug, Jakob-Preh-Schule Bad Neustadt, CC BY 4.0, https://github.com/FlowTheTensor/LS-Paketreise*
+
+**Ausgenommen** von dieser Lizenz sind:
+
+| Bestandteil | Rechte |
+|---|---|
+| `libraries/p5.min.js` | [p5.js](https://p5js.org), GNU LGPL 2.1 |
+| `assets/logo-jps.png` | Logo der Jakob-Preh-Schule – alle Rechte bei der Schule |
+| Schriften Quicksand, Inter, JetBrains Mono | über Google Fonts eingebunden, SIL Open Font License 1.1 |
