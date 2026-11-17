@@ -122,6 +122,7 @@ Beispiele für Prüfungsfragen:
 | „Neustart“ oder **R** | Szenario von vorn |
 | Tempo | langsam, mittel, schnell |
 | „Sicht von Mr. Shark“, **L** oder Klick auf Mr. Shark | Paketlupe umschalten |
+| Mond / Sonne oben rechts | dunkles oder helles Farbschema; die Wahl wird im Browser gespeichert und gilt für alle Lernsituationen |
 
 ## Ideen für den Unterricht
 
@@ -144,6 +145,7 @@ Beispiele für Prüfungsfragen:
 | `ui.js` | Knöpfe, Auswahllisten, Eingabefelder |
 | `sketch.js` | Ablauf, Zeichnen: Hochhäuser, Auskunft, Pforte, Mr. Shark, Paketlupe, Mitschnitt |
 | `assets/logo-jps.png` | Logo der Jakob-Preh-Schule |
+| `assets/logo-jps-hell.png` | Logo in Weiß für das dunkle Farbschema |
 | `libraries/p5.min.js` | p5.js (lokal, damit die Seite auch offline läuft) |
 
 ### Ein eigenes Szenario ergänzen
@@ -174,6 +176,7 @@ Am einfachsten in VS Code mit der Erweiterung **Live Server**: Rechtsklick auf `
 - Jedes Szenario wird vorab komplett durchgerechnet. Die Anzeige blättert nur durch diese Schritte. Während ein Paket unterwegs ist, zeigen Mitschnitt, MAC-Tabelle und Caches noch den alten Stand und springen erst um, wenn das Paket an der passenden Stelle vorbeikommt.
 - Das Modell ist bewusst vereinfacht: ein einziges Subnetz ohne Router, Sequenznummern relativ ab 0 (wie Wireshark sie anzeigt), TLS 1.3 auf drei Schritte gekürzt, keine Verbindungsabbau-Segmente (FIN). Dass TLS in der Praxis zwischen Schicht 4 und 7 sitzt, wird zugunsten der klaren Zuordnung „Verschlüsselung = Schicht 6“ ausgeblendet.
 - Fehler in `draw()` werden abgefangen und als Hinweis angezeigt, statt das Programm einzufrieren.
+- **Farbschema hell/dunkel:** Alle Farben stehen in zwei Paletten (`FARBE_HELL`, `FARBE_DUNKEL`); `FARBE` enthält die aktive Palette und wird beim Umschalten in place überschrieben. Die CSS-Variablen in `style.css` wechseln über die Klasse `dunkelmodus` am `<html>`-Element. Die Wahl steht im `localStorage` unter `jps-lernsituationen-farbschema` (ohne Speicher gilt die Systemeinstellung). Im dunklen Schema zeigt die Kopfzeile `assets/logo-jps-hell.png`.
 
 ## Lizenz
 
@@ -194,5 +197,5 @@ Vorschlag für die Namensnennung: *„Paketreise · Zwei Firmenzentralen und ein
 | Bestandteil | Rechte |
 |---|---|
 | `libraries/p5.min.js` | [p5.js](https://p5js.org), GNU LGPL 2.1 |
-| `assets/logo-jps.png` | Logo der Jakob-Preh-Schule – alle Rechte bei der Schule |
+| `assets/logo-jps.png`, `assets/logo-jps-hell.png` | Logo der Jakob-Preh-Schule – alle Rechte bei der Schule |
 | Schriften Quicksand, Inter, JetBrains Mono | über Google Fonts eingebunden, SIL Open Font License 1.1 |

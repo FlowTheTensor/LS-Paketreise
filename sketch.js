@@ -70,7 +70,7 @@ const P_STEUER = { x: 940, y: 480, w: 400, h: 404, titel: "" };
 const P_FREIGABE = { x: 1356, y: 480, w: 220, h: 404, titel: "Freigaben" };
 const KOPF_H = 34;
 
-const FARBE = {
+const FARBE_HELL = {
   papier: [251, 249, 245],
   flaeche: [255, 255, 255],
   flaeche2: [243, 238, 230],
@@ -86,7 +86,79 @@ const FARBE = {
   violett: [122, 74, 150],
   kabel: [70, 72, 76],
   hai: [96, 118, 138],
+  // Flächen und Schrift auf Flächen (für das dunkle Schema nötig)
+  textInvers: [255, 255, 255],
+  dunkelFlaeche: [29, 29, 28],
+  schatten: [29, 29, 28],
+  akzentFlaeche: [253, 240, 242],
+  akzentLinie: [240, 200, 208],
+  rotFlaeche: [251, 225, 230],
+  gruenFlaeche: [228, 241, 233],
+  neutral: [160, 155, 146], // inaktive Elemente
 };
+
+const FARBE_DUNKEL = {
+  papier: [22, 22, 21],
+  flaeche: [32, 31, 30],
+  flaeche2: [44, 42, 40],
+  linie: [62, 59, 55],
+  text: [236, 232, 224],
+  grau: [184, 178, 168],
+  blass: [140, 135, 126],
+  akzent: [236, 76, 98],
+  akzentHell: [255, 64, 92],
+  senf: [222, 166, 72],
+  gruen: [96, 186, 132],
+  blau: [104, 156, 222],
+  violett: [176, 136, 206],
+  kabel: [150, 152, 156],
+  hai: [134, 156, 176],
+  textInvers: [22, 22, 21],
+  dunkelFlaeche: [70, 67, 62],
+  schatten: [0, 0, 0],
+  akzentFlaeche: [52, 27, 32],
+  akzentLinie: [104, 44, 56],
+  rotFlaeche: [72, 32, 40],
+  gruenFlaeche: [30, 54, 41],
+  neutral: [120, 116, 108], // inaktive Elemente
+};
+
+const FARBE = {};
+
+// --- Farbschema hell/dunkel ---------------------------------------------------
+// FARBE enthält immer die aktive Palette. Beim Umschalten werden die Arrays
+// in place überschrieben, damit Verweise wie [FARBE.blau, …] gültig bleiben.
+// Die Wahl gilt für alle Lernsituationen (gleicher localStorage-Schlüssel).
+const FARBSCHEMA_SCHLUESSEL = "jps-lernsituationen-farbschema";
+let dunkelModus = false;
+
+function setzeFarbschema(dunkel) {
+  dunkelModus = !!dunkel;
+  const quelle = dunkelModus ? FARBE_DUNKEL : FARBE_HELL;
+  for (const k in quelle) {
+    if (FARBE[k]) {
+      FARBE[k].splice(0, FARBE[k].length, ...quelle[k]);
+    } else {
+      FARBE[k] = quelle[k].slice();
+    }
+  }
+  document.documentElement.classList.toggle("dunkelmodus", dunkelModus);
+}
+
+function gespeichertesFarbschema() {
+  try {
+    const v = localStorage.getItem(FARBSCHEMA_SCHLUESSEL);
+    if (v === "dunkel" || v === "hell") {
+      return v === "dunkel";
+    }
+  } catch (e) {
+    // kein Speicher verfügbar (z. B. privater Modus) – Systemeinstellung nehmen
+  }
+  return !!(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+}
+
+setzeFarbschema(gespeichertesFarbschema());
+
 
 // Farbe je OSI-Schicht
 const SCHICHT_FARBE = {
@@ -309,7 +381,7 @@ function zeichneTooltip() {
     y = m.y - bh - 10;
   }
   noStroke();
-  fill(29, 29, 28, 40);
+  fill(...FARBE.schatten, 40);
   rect(x + 1, y + 3, bw, bh, 6);
   fill(...FARBE.text);
   rect(x, y, bw, bh, 6);
@@ -624,7 +696,7 @@ function keyPressed() {
 // =============================================================================
 function panel(p) {
   noStroke();
-  fill(29, 29, 28, 10);
+  fill(...FARBE.schatten, 10);
   rect(p.x + 1, p.y + 3, p.w, p.h, 12);
   fill(...FARBE.flaeche);
   stroke(...FARBE.linie);
@@ -647,7 +719,7 @@ function panel(p) {
 }
 
 function hell(farbe, anteil) {
-  return [lerp(farbe[0], 255, anteil), lerp(farbe[1], 255, anteil), lerp(farbe[2], 255, anteil)];
+  return [lerp(farbe[0], FARBE.flaeche[0], anteil), lerp(farbe[1], FARBE.flaeche[1], anteil), lerp(farbe[2], FARBE.flaeche[2], anteil)];
 }
 
 function umbrechen(txt, maxBreite) {
@@ -726,9 +798,9 @@ function zeichneKopf() {
 
 function zeichneStufenLeiste() {
   noStroke();
-  fill(253, 240, 242);
+  fill(...FARBE.akzentFlaeche);
   rect(0, 56, W, LEISTE);
-  stroke(240, 200, 208);
+  stroke(...FARBE.akzentLinie);
   strokeWeight(1);
   line(0, 56 + LEISTE, W, 56 + LEISTE);
   noStroke();
@@ -971,7 +1043,7 @@ function kabel(x1, y1, x2, y2, aktiv) {
   stroke(...(aktiv ? FARBE.akzent : FARBE.kabel));
   strokeWeight(aktiv ? 5 : 4);
   line(x1, y1, x2, y2);
-  stroke(255, 255, 255, 90);
+  stroke(...FARBE.flaeche, 255, 255, 90);
   strokeWeight(1);
   line(x1, y1 - 1, x2, y2 - 1);
 }
@@ -1019,7 +1091,7 @@ function zeichneTurm(g, s, lage) {
   noStroke();
   fill(...FARBE.text);
   rect(tu.x, 122, tu.w, 34, 6, 6, 0, 0);
-  fill(255);
+  fill(...FARBE.textInvers);
   textFont(TITEL);
   textStyle(BOLD);
   textSize(14);
@@ -1028,7 +1100,7 @@ function zeichneTurm(g, s, lage) {
   textStyle(NORMAL);
   textFont(MONO);
   textSize(10.5);
-  fill(...(ipFalsch && zeigeLoesung() ? [255, 150, 160] : [210, 206, 198]));
+  fill(...(ipFalsch && zeigeLoesung() ? [255, 150, 160] : FARBE.neutral));
   if (g === "server") {
     textSize(9.5);
   }
@@ -1045,7 +1117,7 @@ function zeichneTurm(g, s, lage) {
     const fehler = zeigeLoesung() && s.fehlerSchicht === e && FEHLER_SEITE[e] === g;
     stroke(...FARBE.linie);
     strokeWeight(1);
-    fill(...(aktiv ? hell(farbe, 0.78) : fehler ? hell(FARBE.akzent, 0.86) : e % 2 ? [250, 248, 244] : [244, 240, 233]));
+    fill(...(aktiv ? hell(farbe, 0.78) : fehler ? hell(FARBE.akzent, 0.86) : e % 2 ? FARBE.papier : FARBE.papier));
     rect(tu.x, y, tu.w, ETAGE_H);
     noStroke();
     fill(...farbe);
@@ -1119,7 +1191,7 @@ function zeichneAuskunft(s, lage) {
   noStroke();
   fill(...FARBE.text);
   rect(a.x, a.y, a.w, 30, 6, 6, 0, 0);
-  fill(255);
+  fill(...FARBE.textInvers);
   textFont(TITEL);
   textStyle(BOLD);
   textSize(13.5);
@@ -1128,7 +1200,7 @@ function zeichneAuskunft(s, lage) {
   textStyle(NORMAL);
   textFont(MONO);
   textSize(10);
-  fill(210, 206, 198);
+  fill(...FARBE.neutral);
   text(`DNS-Server · ${GERAETE.dns.ip}`, a.x + 10, a.y + 24);
   stroke(...(beteiligt ? SCHICHT_FARBE[7] : FARBE.linie));
   strokeWeight(beteiligt ? 2 : 1);
@@ -1186,7 +1258,7 @@ function zeichnePforte(s, z, lage) {
   noStroke();
   fill(...FARBE.text);
   rect(p.x, p.y, p.w, 30, 6, 6, 0, 0);
-  fill(255);
+  fill(...FARBE.textInvers);
   textFont(TITEL);
   textStyle(BOLD);
   textSize(13.5);
@@ -1195,7 +1267,7 @@ function zeichnePforte(s, z, lage) {
   textStyle(NORMAL);
   textFont(SCHRIFT);
   textSize(10);
-  fill(210, 206, 198);
+  fill(...FARBE.neutral);
   text("Switch · Schicht 2", p.x + 10, p.y + 24);
   stroke(...(aktiv ? SCHICHT_FARBE[2] : FARBE.linie));
   strokeWeight(aktiv ? 2 : 1);
@@ -1207,7 +1279,7 @@ function zeichnePforte(s, z, lage) {
     noStroke();
     fill(...FARBE.text);
     rect(t.x - 7, t.y - 7, 14, 14, 2);
-    fill(255);
+    fill(...FARBE.textInvers);
     textFont(MONO);
     textStyle(BOLD);
     textSize(9);
@@ -1280,7 +1352,7 @@ function zeichneHai(s, t) {
   line(-16, 29, -14, 29);
   noStroke();
   // Grinsen
-  stroke(255);
+  stroke(...FARBE.flaeche);
   strokeWeight(1.5);
   noFill();
   arc(-20, 40, 18, 8, 0.2, PI - 0.4);
@@ -1308,7 +1380,7 @@ function zeichneHai(s, t) {
 function zeichneBlase(z) {
   const b = BLASE;
   noStroke();
-  fill(29, 29, 28, 12);
+  fill(...FARBE.schatten, 12);
   rect(b.x + 1, b.y + 3, b.w, b.h, 12);
   fill(...hell(FARBE.hai, 0.88));
   stroke(...FARBE.hai);
@@ -1365,7 +1437,7 @@ function zeichnePaket(cx, cy, n, sichtbar, skala, alpha, marke) {
       drawingContext.setLineDash([]);
       return;
     }
-    stroke(255, 255, 255, alpha);
+    stroke(...FARBE.flaeche, 255, 255, alpha);
     strokeWeight(1);
     if (geheim[nr] && haiSicht) {
       fill(120, 120, 120, alpha);
@@ -1377,17 +1449,17 @@ function zeichnePaket(cx, cy, n, sichtbar, skala, alpha, marke) {
   // Schloss bei verschlüsseltem Inhalt
   if (n.huellen.some((h) => h.geheim)) {
     noStroke();
-    fill(255, 214, 90, alpha);
+    fill(...FARBE.flaeche, 214, 90, alpha);
     rect(-5, -2, 10, 8, 1);
     noFill();
-    stroke(255, 214, 90, alpha);
+    stroke(...FARBE.flaeche, 214, 90, alpha);
     strokeWeight(1.5);
     arc(0, -2, 7, 8, PI, TWO_PI);
   }
   pop();
   if (marke) {
     noStroke();
-    fill(200, 30, 58, alpha);
+    fill(...FARBE.akzent, alpha);
     textFont(SCHRIFT);
     textStyle(BOLD);
     textSize(11);
@@ -1645,7 +1717,7 @@ function zeichneNotizen(x, y, b) {
   const halb = (b - 10) / 2;
   const notiz = (nx, titel, eintraege) => {
     noStroke();
-    fill(255, 247, 214);
+    fill(...FARBE.flaeche, 247, 214);
     rect(nx, y + 38, halb, 50, 4);
     fill(...FARBE.grau);
     textFont(SCHRIFT);
@@ -1855,16 +1927,16 @@ function zeichneStempel() {
   rotate(-0.18);
   scale(1 + fall * 1.5);
   noStroke();
-  fill(255, 255, 255, alpha * 0.85);
+  fill(...FARBE.flaeche, 255, 255, alpha * 0.85);
   circle(0, 0, 250);
   noFill();
-  stroke(200, 30, 58, alpha);
+  stroke(...FARBE.akzent, alpha);
   strokeWeight(7);
   circle(0, 0, 250);
   strokeWeight(2.5);
   circle(0, 0, 222);
   noStroke();
-  fill(200, 30, 58, alpha);
+  fill(...FARBE.akzent, alpha);
   textFont(TITEL);
   textStyle(BOLD);
   textAlign(CENTER, CENTER);
@@ -1883,7 +1955,7 @@ function zeichneFehlerMeldung() {
     return;
   }
   noStroke();
-  fill(200, 30, 58, 235);
+  fill(...FARBE.akzent, 235);
   rect(24, 846, 900, 34, 8);
   fill(255);
   textFont(SCHRIFT);
